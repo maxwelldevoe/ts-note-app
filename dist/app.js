@@ -14,7 +14,7 @@ class App {
         this.app.use(body_parser_1.default.json());
         this.app.use(body_parser_1.default.urlencoded({ extended: false }));
         this.app.listen(3000, () => {
-            console.log('Server is running on port 3000');
+            console.log("Server is running on port 3000");
         });
     }
 }

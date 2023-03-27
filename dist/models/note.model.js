@@ -15,5 +15,5 @@ const NoteSchema = new Schema({
         required: true
     }
 });
-exports.default = mongoose_1.default.model('Note', NoteSchema);
+exports.default = mongoose_1.default.model("Note", NoteSchema);
 //# sourceMappingURL=note.model.js.map

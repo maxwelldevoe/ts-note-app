@@ -16,10 +16,12 @@ class NoteController {
         res.json(note);
     }
     async updateNote(req, res) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/naming-convention
         const note = await note_model_1.default.findOneAndUpdate({ _id: req.params.noteId }, req.body, { new: true });
         res.json(note);
     }
     async deleteNote(req, res) {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const note = await note_model_1.default.findOneAndDelete({ _id: req.params.noteId });
         res.json(note);
     }
