@@ -1,3 +1,24 @@
+def updateGithubCommitStatus(build) {
+  // workaround https://issues.jenkins-ci.org/browse/JENKINS-38674
+  repoUrl = getRepoURL()
+  commitSha = getCommitSha()
+
+  step([
+    $class: 'GitHubCommitStatusSetter',
+    reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],
+    commitShaSource: [$class: "ManuallyEnteredShaSource", sha: commitSha],
+    errorHandlers: [[$class: 'ShallowAnyErrorHandler']],
+    statusResultSource: [
+      $class: 'ConditionalStatusResultSource',
+      results: [
+        [$class: 'BetterThanOrEqualBuildResult', result: 'SUCCESS', state: 'SUCCESS', message: build.description],
+        [$class: 'BetterThanOrEqualBuildResult', result: 'FAILURE', state: 'FAILURE', message: build.description],
+        [$class: 'AnyBuildResult', state: 'FAILURE', message: 'Loophole']
+      ]
+    ]
+  ])
+}
+
 pipeline {
     agent {
         node {
@@ -13,12 +34,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Set GitHub status') {
-            steps {
-                githubSetCommitStatus context: 'Jenkins', state: 'PENDING', message: 'Building...', commitSha1: env.GIT_COMMIT
             }
         }
         
@@ -48,7 +63,7 @@ pipeline {
                 always {
                     script {
                         def success = currentBuild.result == 'SUCCESS'
-                        githubSetCommitStatus context: 'Jenkins', state: success ? 'SUCCESS' : 'FAILURE', message: success ? 'Build succeeded' : 'Build failed', commitSha1: env.GIT_COMMIT
+                        updateGithubCommitStatus(currentBuild)
                     }
                 }
             }
