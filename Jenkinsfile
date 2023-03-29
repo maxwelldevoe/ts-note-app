@@ -27,6 +27,12 @@ pipeline {
                 sh 'npm run lint'
             }
         }
+
+        stage('Clean') {
+            steps {
+                sh 'npm run clean'
+            }
+        }
         
         stage('Build') {
             steps {
