@@ -15,6 +15,12 @@ pipeline {
                 checkout scm
             }
         }
+
+        stage('Set GitHub status') {
+            steps {
+                githubSetCommitStatus context: 'Jenkins', state: 'PENDING', message: 'Building...', commitSha1: env.GIT_COMMIT
+            }
+        }
         
         stage('Install Dependencies') {
             steps {
@@ -37,6 +43,24 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'npm run build'
+            }
+            post {
+                always {
+                    script {
+                        def success = currentBuild.result == 'SUCCESS'
+                        githubSetCommitStatus context: 'Jenkins', state: success ? 'SUCCESS' : 'FAILURE', message: success ? 'Build succeeded' : 'Build failed', commitSha1: env.GIT_COMMIT
+                    }
+                }
+            }
+        }
+
+        stage('Set pull request status') {
+            when {
+                beforeAgent true
+                expression { env.GIT_BRANCH.startsWith('refs/pull/') }
+            }
+            steps {
+                githubSetPullRequestStatus context: 'Jenkins', state: 'PENDING', message: 'Building...', commitSha1: env.GIT_COMMIT
             }
         }
         
