@@ -5,6 +5,10 @@ pipeline {
         }
     }
     
+    environment {
+        PATH = "${tool 'nodejs'}/bin:${env.PATH}"
+    }
+    
     stages {
         stage('Checkout') {
             steps {
@@ -14,9 +18,7 @@ pipeline {
         
         stage('Install Dependencies') {
             steps {
-                withEnv(["PATH+NODE=${tool 'nodejs'}/bin"]) {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
         }
         
