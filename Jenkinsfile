@@ -16,7 +16,8 @@ pipeline {
             steps {
                 def npmPath = tool 'nodejs'
                 withEnv(["PATH+NODE=${npmPath}/bin"]) {
-                sh 'npm install'
+                    sh 'npm install'
+                }
             }
         }
         
